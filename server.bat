@@ -1,0 +1,1 @@
+xcopy /e C:\Users\vrati\projects\bpt\server C:\Apache24\htdocs
