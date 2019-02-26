@@ -1,13 +1,26 @@
 
+import { rootEndpoint } from './settings'
+import request from 'superagent'
+
 export const LOGIN_USER = 'LOGIN_USER'
 
 
-export const login = () => {
+export const login = (usr, psw) => {
   return (dispatch) => {
-    dispatch({
-      type: LOGIN_USER,
-      payload: { name: 'admin', pass: 'blabla' }
-    })   
+    return new Promise((resolve) => {
+      let body = { req: 'login', username: usr, password: psw }
+      request.post(`http://${rootEndpoint}/api/user.php`)
+        .send(body)
+        .set('Accept', 'application/json')
+        .end((err, res) => {
+          resolve({ err, response: res })
+        })
+      }).then((res) => {
+        dispatch({
+          type: LOGIN_USER,
+          payload: res.response.body.status
+        })  
+      })
   }
 }
 
@@ -17,16 +30,18 @@ const ACTION_HANDLERS = {
 
 
 const initialState = {
-  user: {}
+  login: {}
 }
 
 export const configReducer = (state = initialState, action) => {
   const handler = ACTION_HANDLERS[action.type]
+  let login = Object.assign({}, state.login)
 
   switch (action.type) {
     case LOGIN_USER:
-      let user = handler(state, action)
-      return Object.assign({}, state, { user })  
+      let status = handler(state, action)
+      login.status = status    
+      return Object.assign({}, state, { login })  
   }
 
   return state  

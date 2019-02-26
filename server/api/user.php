@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 require "../config/config.php";
 // require "../../home/config.php";
@@ -40,19 +39,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rest['req'] ) {
 // USER LOGIN
 // ---------------------------------------------------------------------------
     case "login":
-      if (is_array($_SESSION['user'])) {
-        die(json_encode([
-          "status" => true,
-          "message" => "Already signed in",
-          "user" => $_SESSION['user']['name']
-        ]));
-      }
       $pass = $users->login($rest['username'], $rest['password']);
-      if ($pass!==false) { $_SESSION['user'] = $pass; }
       echo json_encode([
         "status" => is_array($pass),
-        "message" => is_array($pass) ? "LOGIN" : "Error",
-        "tt" => $_SESSION['user']['name']
+        "message" => is_array($pass) ? "LOGIN" : "Error"
       ]);
       break;
 
