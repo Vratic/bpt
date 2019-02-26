@@ -28,35 +28,22 @@ export class Container extends React.Component {
     this.props.login()
 
     let body = {
-      req : 'users',
-      // username : 'admin',
-      // password : 'admin'
+      req: 'login',
+      username: 'admin',
+      password: 'admin'
     }
 
-
     return new Promise((resolve) => {
-      let res = request.get('http://bistropodtroskami.cz/api/user.php?req=users')
-      // .send(JSON.stringify(body))
-      // .set('Access-Control-Allow-Origin : *')
+      let res = request.post('http://localhost/api/user.php')
+      .send(body)
+      .set('Accept', 'application/json')
       .end((err, res) => {
         resolve({ err, response: res })
       })
+
     }).then((res) => {
-      console.log('res', res.response, res.response.body)
+      console.log('[ REQ ]', res.response.body)
     })
-    
-
-    console.log(res)
-
-
-
-    // fetch('http://localhost/api/user.php', {
-    //   method: 'POST',
-    //   body: JSON.stringify(body)
-    // })
-    // .then(response => {
-    //   console.log(response)
-    // })
   }
 
   render() {

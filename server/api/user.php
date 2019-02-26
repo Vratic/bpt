@@ -9,17 +9,16 @@ $users = new User();
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: *');
-// header('Accept: application/json');
+header('Accept: application/json');
 
-if (isset($_POST['req'])) {
-  switch ($_POST['req']) {
-    default:
-      echo json_encode([
-        "status" => false,
-        "message" => "Invalid Request"
-      ]);
-      break;
+$rest_json = file_get_contents("php://input");
+$rest = json_decode($rest_json, true);
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rest['req'] ) {
+  switch ($rest['req']) {
+
+// USER LIST
+// ---------------------------------------------------------------------------
     case "users":
       $all = $users->getAllUsers();
       echo json_encode([
@@ -28,15 +27,18 @@ if (isset($_POST['req'])) {
       ]);
       break;
 
+// USER CREATE
+// ---------------------------------------------------------------------------
     case "create":
-        $pass = $users->create($_POST['username'], $_POST['password']);
+        $pass = $users->create($rest['username'], $rest['password']);
         echo json_encode([
           "status" => $pass,
           "message" => $pass ? "User Created" : "Error creating user"
         ]);
         break;
-    
 
+// USER LOGIN
+// ---------------------------------------------------------------------------
     case "login":
       if (is_array($_SESSION['user'])) {
         die(json_encode([
@@ -45,14 +47,17 @@ if (isset($_POST['req'])) {
           "user" => $_SESSION['user']['name']
         ]));
       }
-      $pass = $users->login($_POST['username'], $_POST['password']);
+      $pass = $users->login($rest['username'], $rest['password']);
       if ($pass!==false) { $_SESSION['user'] = $pass; }
       echo json_encode([
         "status" => is_array($pass),
-        "message" => is_array($pass) ? "LOGIN" : "Error"
+        "message" => is_array($pass) ? "LOGIN" : "Error",
+        "tt" => $_SESSION['user']['name']
       ]);
       break;
 
+// USER LOGOUT
+// ---------------------------------------------------------------------------
     case "logout":
       unset($_SESSION['user']);
       echo json_encode([
@@ -60,29 +65,39 @@ if (isset($_POST['req'])) {
         "message" => "LOGOUT"
       ]);
       break;
+
+// DEFAULT
+// ---------------------------------------------------------------------------
+    default:
+      echo json_encode([
+        "status" => false,
+        "message" => "Invalid Request"
+      ]);
+      break;
     }
   }
     
 
-  if (isset($_GET['req'])) {
-    switch ($_GET['req']) {
-      default:
-        echo json_encode([
-          "status" => false,
-          "message" => "Invalid Request"
-        ]);
-        break;
+  // FOR TESTING
+  // ---------------------------------------------------------------------------
+  // if (isset($_GET['req'])) {
+  //   switch ($_GET['req']) {
+  //     default:
+  //       echo json_encode([
+  //         "status" => false,
+  //         "message" => "Invalid Request"
+  //       ]);
+  //       break;
   
-      case "users":
-        $all = $users->getAllUsers();
-        echo json_encode([
-          "status" => $all==false?false:true,
-          "data" => $all
-        ]);
-        break;
-      }
-
-      
-    }
+  //     case "users":
+  //       $all = $users->getAllUsers();
+  //       echo json_encode([
+  //         "status" => $all==false?false:true,
+  //         "data" => $all
+  //       ]);
+  //       break;
+  //     }
+  //   }
+  // ---------------------------------------------------------------------------
 
 ?>
