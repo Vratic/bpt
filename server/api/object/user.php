@@ -59,15 +59,29 @@ class User{
     return count($user)==0 ? false : $user[0];
   }
 
+  function updateToken($token, $id){
+    return $this->query(
+      "UPDATE `users` SET `token`=? WHERE `id`=?",
+      [$token, $id]
+    );
+  }
+
   function login($name, $password){
     $user = $this->getUser($name);
     if ($user==false) { return false; }
-
     if (password_verify($password, $user['password'])){
       return $user;
     } else {
       return false;
     }
+  }
+
+  function validate($token){
+    $this->stmt = $this->pdo->prepare("SELECT * FROM `users` WHERE `token`=?");
+    $cond = [$token];
+    $this->stmt->execute($cond);
+    $user = $this->stmt->fetchAll();
+    return count($user)==0 ? false : $user[0];
   }
 }
 ?>

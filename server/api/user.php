@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (!isset($_SESSION)) {
+  session_start();
+}
 require "../config/config.php";
 // require "../../home/config.php";
 require "object/user.php";
@@ -21,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rest['req'] ) {
     case "users":
       $all = $users->getAllUsers();
       echo json_encode([
-        "status" => $all==false?false:true,
+        "status" => $all==false?400:200,
         "data" => $all
       ]);
       break;
@@ -40,19 +42,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rest['req'] ) {
 // ---------------------------------------------------------------------------
     case "login":
       $pass = $users->login($rest['username'], $rest['password']);
-      echo json_encode([
-        "status" => is_array($pass),
-        "message" => is_array($pass) ? "LOGIN" : "Error"
-      ]);
+      if ($pass['token'] === NULL) {
+        $token = bin2hex(random_bytes(RANDOM));
+        $passUPD = $users->updateToken($token, $pass['id']);
+
+        echo json_encode([
+          "status" => is_array($pass) ? 200 : 400,
+          "message" => is_array($pass) ? "LOGIN" : "Error",
+          "token" => $passUPD ? $token : NULL
+        ]);
+
+      } else {
+        echo json_encode([
+          "status" => 404,
+          "message" => "User is login...",
+          "token" => $pass['token']
+        ]);
+      }
+      
       break;
 
 // USER LOGOUT
 // ---------------------------------------------------------------------------
     case "logout":
-      unset($_SESSION['user']);
+      $pass = $users->validate($rest['token']);
+      $passUPD = $users->updateToken(NULL, $pass['id']);
       echo json_encode([
-        "status" => true,
-        "message" => "LOGOUT"
+        "status" => 200,
+        "message" => "LOGOUT",
+        "validate" => $pass ? true : false
       ]);
       break;
 

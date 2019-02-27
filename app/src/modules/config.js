@@ -3,6 +3,7 @@ import { rootEndpoint } from './settings'
 import request from 'superagent'
 
 export const LOGIN_USER = 'LOGIN_USER'
+export const LOGOUT_USER = 'LOGOUT_USER'
 
 
 export const login = (usr, psw) => {
@@ -16,16 +17,38 @@ export const login = (usr, psw) => {
           resolve({ err, response: res })
         })
       }).then((res) => {
+        console.log(res.response.body)
         dispatch({
           type: LOGIN_USER,
-          payload: res.response.body.status
+          payload: res.response.body
         })  
       })
   }
 }
 
+export const logout = (token) => {
+  return (dispatch) => {
+    return new Promise((resolve) => {
+      let body = { req : 'logout', token: token }
+      request.post(`http://${rootEndpoint}/api/user.php`)
+        .send(body)
+        .set('Accept', 'application/json')
+        .end((err, res) => {
+          resolve({ err, response: res })
+        })
+    }).then((res) => {
+      console.log(res.response.body)
+      dispatch({
+        type: LOGOUT_USER,
+        payload: res.response
+      })
+    })
+  }
+}
+
 const ACTION_HANDLERS = {
-  [LOGIN_USER]: (state, action) => action.payload
+  [LOGIN_USER]: (state, action) => action.payload,
+  [LOGOUT_USER]: (state, action) => action.payload
 }
 
 
@@ -39,9 +62,15 @@ export const configReducer = (state = initialState, action) => {
 
   switch (action.type) {
     case LOGIN_USER:
-      let status = handler(state, action)
-      login.status = status    
-      return Object.assign({}, state, { login })  
+      let req = handler(state, action)
+      login.status = req.status
+      login.token =  req.token
+      return Object.assign({}, state, { login })
+
+    case LOGOUT_USER:
+      let reqOut = handler(state, action)
+      login = {}
+      return Object.assign({}, state, { login })
   }
 
   return state  
