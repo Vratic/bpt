@@ -3,6 +3,7 @@ import deepEqual from 'deep-equal'
 import { Provider } from 'react-redux'
 import PropTypes from 'prop-types'
 import Container from './components/Container'
+import './css/intro.js'
 
 export class App extends React.Component {
   static propTypes = {

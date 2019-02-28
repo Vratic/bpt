@@ -1,0 +1,1 @@
+xcopy /e C:\Users\vrati\projects\bpt\app\dist C:\Users\vrati\projects\bpt\server
