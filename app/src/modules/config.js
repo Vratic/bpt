@@ -17,7 +17,6 @@ export const login = (usr, psw) => {
           resolve({ err, response: res })
         })
       }).then((res) => {
-        console.log(res.response.body)
         dispatch({
           type: LOGIN_USER,
           payload: res.response.body
@@ -26,10 +25,10 @@ export const login = (usr, psw) => {
   }
 }
 
-export const logout = (token) => {
+export const logout = () => {
   return (dispatch) => {
     return new Promise((resolve) => {
-      let body = { req : 'logout', token: token }
+      let body = { req : 'logout' }
       request.post(`http://${rootEndpoint}/api/user.php`)
         .send(body)
         .set('Accept', 'application/json')
@@ -37,7 +36,7 @@ export const logout = (token) => {
           resolve({ err, response: res })
         })
     }).then((res) => {
-      console.log(res.response.body)
+      localStorage.removeItem('token')
       dispatch({
         type: LOGOUT_USER,
         payload: res.response

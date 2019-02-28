@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rest['req'] ) {
         echo json_encode([
           "status" => is_array($pass) ? 200 : 400,
           "message" => is_array($pass) ? "LOGIN" : "Error",
-          "token" => $passUPD ? $token : NULL
+          "token" => (is_array($pass) && $passUPD) ? $token : NULL
         ]);
 
       } else {
@@ -65,12 +65,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rest['req'] ) {
 // USER LOGOUT
 // ---------------------------------------------------------------------------
     case "logout":
-      $pass = $users->validate($rest['token']);
-      $passUPD = $users->updateToken(NULL, $pass['id']);
+      // $pass = $users->validate($rest['token']);
+      // $passUPD = $users->updateToken(NULL, $pass['id']);
       echo json_encode([
         "status" => 200,
         "message" => "LOGOUT",
-        "validate" => $pass ? true : false
+        // "validate" => $pass ? true : false
       ]);
       break;
 
