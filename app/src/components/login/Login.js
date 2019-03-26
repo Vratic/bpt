@@ -2,39 +2,46 @@ import React from 'react'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import deepEqual from 'deep-equal'
-import { login, logout } from '../../modules/config'
+import { logout, showLoginModal } from '../../modules/config'
+import LoginModal from './LoginModal'
 
 const mapStateToProps = (state, ownProps) => {
   return ({
-    cnf: state.config.login
+    token: state.config.token,
+    username: state.config.username
   })
 }
 
 const mapDispatchToProps = {
-  login,
-  logout
+  logout,
+  showLoginModal
 }
 
 export class Login extends React.Component {
   static propTypes = {
-    cnf: PropTypes.object,
-    login: PropTypes.func,
-    logout: PropTypes.func
+    token: PropTypes.string,
+    username: PropTypes.string,
+    logout: PropTypes.func,
+    showLoginModal: PropTypes.func
   }
 
   constructor() {
     super()
     this.state = {
-      login: false,
-      name: '',
-      password: ''
+      login: false
     }
   }
 
   static getDerivedStateFromProps(props, state) {    
     let tokenLocal = localStorage.getItem('token')
-    if ((props.cnf.token === null || props.cnf.token === undefined) && tokenLocal === null) return null
-    if (tokenLocal === null) { localStorage.setItem('token', props.cnf.token) }
+    if (props.token === null  && tokenLocal === null) return {login: false}
+    
+    if (tokenLocal === null) {
+      localStorage.setItem('token', props.token)
+    } else {
+
+    }
+
     return { login: true }
   }
 
@@ -42,45 +49,27 @@ export class Login extends React.Component {
     return !deepEqual(nextProps, this.props) || !deepEqual(nextState, this.state)
   }
 
-  handleName = (e) => {
-    this.setState({ name: e.target.value })
+  showLoginModal = (show) => {
+    this.props.showLoginModal(show)
   }
 
-  handlePassword = (e) => {
-    this.setState({ password: e.target.value })
-  }
-
-  handleSubmit = (e)  => {
-    this.props.login(this.state.name, this.state.password)
-    e.preventDefault()
+  logout = () => {
+    this.setState({
+      login: false
+    }, () => {
+      this.props.logout()
+    })
   }
 
   render() {
     return (
-      <div>
-        { (this.state.login === true)
-        ? <form onSubmit={this.props.logout}>
-            <input type="submit" value="Logout" />
-          </form>
-
-        : <form onSubmit={this.handleSubmit}>
-            <label>Name: </label>
-            <input
-              type="text"
-              value={this.state.name}
-              onChange={this.handleName}
-            />
-            
-            <label>Password: </label>
-            <input
-              type="password"
-              value={this.state.password}
-              onChange={this.handlePassword}
-            />
-            
-            <input type="submit" value="Login" />
-        </form>
+      <div className='login' >
+        {(!this.state.login) 
+          // ? <i className="fas fa-sign-in-alt" onClick={() => this.showLoginModal(true)} />    
+          ? <span  onClick={() => this.showLoginModal(true)}>login</span>      
+          : <span onClick={() => this.logout()}>{this.props.username || ''}<i className="fas fa-sign-out-alt" onClick={() => this.logout()}/></span>
         }
+        <LoginModal />
       </div>
     )
   }

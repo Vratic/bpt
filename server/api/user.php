@@ -1,7 +1,5 @@
 <?php
-if (!isset($_SESSION)) {
-  session_start();
-}
+session_start();
 require "../config/config.php";
 // require "../../home/config.php";
 require "object/user.php";
@@ -12,36 +10,23 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: *');
 header('Accept: application/json');
 
-$rest_json = file_get_contents("php://input");
-$rest = json_decode($rest_json, true);
+if (isset($_POST['req'])) {
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rest['req'] ) {
-  switch ($rest['req']) {
-
-// USER LIST
-// ---------------------------------------------------------------------------
+  switch ($_POST['req']) {
+    // USER LIST
+    // ---------------------------------------------------------------------------
     case "users":
       $all = $users->getAllUsers();
       echo json_encode([
-        "status" => $all==false?400:200,
+        "status" => $all==false?false:true,
         "data" => $all
       ]);
       break;
-
-// USER CREATE
-// ---------------------------------------------------------------------------
-    case "create":
-        $pass = $users->create($rest['username'], $rest['password']);
-        echo json_encode([
-          "status" => $pass,
-          "message" => $pass ? "User Created" : "Error creating user"
-        ]);
-        break;
-
-// USER LOGIN
-// ---------------------------------------------------------------------------
+    
+    // USER LOGIN
+    // ---------------------------------------------------------------------------
     case "login":
-      $pass = $users->login($rest['username'], $rest['password']);
+      $pass = $users->login($_POST['username'], $_POST['password']);
       if ($pass['token'] === NULL) {
         $token = bin2hex(random_bytes(RANDOM));
         $passUPD = $users->updateToken($token, $pass['id']);
@@ -62,50 +47,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rest['req'] ) {
       
       break;
 
-// USER LOGOUT
-// ---------------------------------------------------------------------------
+    // LOGOUT
+    // ---------------------------------------------------------------------------
     case "logout":
-      // $pass = $users->validate($rest['token']);
-      // $passUPD = $users->updateToken(NULL, $pass['id']);
+      $pass = $users->validate($_POST['token']);
+      $passUPD = $users->updateToken(NULL, $pass['id']);
       echo json_encode([
         "status" => 200,
         "message" => "LOGOUT",
-        // "validate" => $pass ? true : false
+        "validate" => $pass ? true : false
       ]);
       break;
 
-// DEFAULT
-// ---------------------------------------------------------------------------
+    // DEFAULT
+    // ---------------------------------------------------------------------------
     default:
       echo json_encode([
-        "status" => false,
+        "status" => 500,
         "message" => "Invalid Request"
       ]);
       break;
-    }
-  }
     
 
-  // FOR TESTING
-  // ---------------------------------------------------------------------------
-  // if (isset($_GET['req'])) {
-  //   switch ($_GET['req']) {
-  //     default:
-  //       echo json_encode([
-  //         "status" => false,
-  //         "message" => "Invalid Request"
-  //       ]);
-  //       break;
-  
-  //     case "users":
-  //       $all = $users->getAllUsers();
-  //       echo json_encode([
-  //         "status" => $all==false?false:true,
-  //         "data" => $all
-  //       ]);
-  //       break;
-  //     }
-  //   }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// $rest_json = file_get_contents("php://input");
+// $rest = json_decode($rest_json, true);
+// if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rest['req'] ) {
+//    switch ($rest['req']) {
   // ---------------------------------------------------------------------------
 
 ?>

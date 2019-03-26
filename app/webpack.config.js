@@ -1,4 +1,7 @@
-const webpack = require('webpack');
+const webpack = require('webpack')
+var path = require('path')
+
+console.log(path.join(__dirname, 'public/images'))
 
 module.exports = {
   entry: './src/index.js',
@@ -15,13 +18,16 @@ module.exports = {
         use: ['style-loader', 'css-loader'],
       },
       {
-        test: /\.(jpg|png|svg)$/,
+        test: /\.(jpg|png|svg|ttf)$/,
         use: ['file-loader']
       }
     ]
   },
   resolve: {
-    extensions: ['*', '.js', '.jsx']
+    extensions: ['*', '.js', '.jsx'],
+    alias: {
+      images: path.resolve(__dirname, 'src/public/images')
+    },
   },
   output: {
     path: __dirname + '/dist',

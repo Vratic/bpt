@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import deepEqual from 'deep-equal'
 import Login from '../login'
-import logo from '../../css/img/logo.png'
+import { ROOT_IMG } from '../../modules/config'
 
 const mapStateToProps = (state, ownProps) => {
   return ({
@@ -27,7 +27,12 @@ export class Actionbar extends React.Component {
   render() {
     return (
       <div className='actionbar'>
-          <img src={logo} className='logo' style={{height: '80%', padding: '10px'}}/>
+        <Login />
+        <div className='actionbar_slider'>
+         <div className='brand'>
+          <img src={`${ROOT_IMG}/logo.png`} alt="logo"/>
+        </div>  
+        </div>
       </div>
     )
   }

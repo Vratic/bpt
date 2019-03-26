@@ -2,6 +2,8 @@ import React from 'react'
 import { connect } from 'react-redux'
 import deepEqual from 'deep-equal'
 import Actionbar from './actionbar'
+import CarouselContainer from './carousel'
+import Menu from './menu'
 
 export class Container extends React.Component {
   shouldComponentUpdate(nextProps, nextState) {
@@ -10,8 +12,10 @@ export class Container extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className='page'>
         <Actionbar />
+        <CarouselContainer />
+        <Menu />
       </div>
     )
   }

@@ -1,6 +1,32 @@
+/*
+.fas { 
+  padding: 15px;
+  cursor: pointer;
+} */
+
 .actionbar {
-    width: 100%;
-    height: 100px;
-    color: hsla(210, 100%, 75%, 1.0);
-    background: #001f3f;
+  margin: 0;
+  padding: 0;
+  top: 100px;
+  z-index: 10000;
+  position: relative;
+}
+
+.actionbar_slider {
+  background: #111;
+  height: 50px;
+  opacity: .8;
+  margin: 0 15%;
+  border-bottom: 1px solid #f7f3eb;
+}
+
+.brand img{
+  background: #111;
+  width: 300px; 
+  position: relative;
+  top: -65px;  
+  margin-top: 10px;
+  padding: 30px 40px;
+  border-radius: 10px;
+  box-shadow : 0 2px 10px rgba(0,0,0,0.25);
 }
